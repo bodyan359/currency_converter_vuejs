@@ -10,7 +10,7 @@
           class="currency-input"
           v-model="amountToConvert"
           @keypress="isNumber"
-          @input="onInput"
+          @input="onInputDebounced"
           placeholder="Enter Amount to Convert"
         />
       </div>
@@ -53,12 +53,12 @@ export default {
   },
   data() {
     return {
-      last_convertions: [],
       rates_internal: null,
       base: "USD",
       currencyTo: "PLN",
       amountToConvert: "",
       convertedAmount: "",
+      onInputDebounced: this.debounce(this.onInput, 1000),
     };
   },
   methods: {
@@ -88,6 +88,21 @@ export default {
           );
         });
     },
+    debounce: function(func, wait, immediate) {
+      let timeout;
+      return function() {
+        let context = this,
+          args = arguments;
+        let later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        let callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+      };
+    },
   },
   mounted() {
     axios
@@ -100,8 +115,12 @@ export default {
       });
   },
   watch: {
-    base: "onInput",
-    currencyTo: "onInput",
+    base: function() {
+      this.onInputDebounced();
+    },
+    currencyTo: function() {
+      this.onInputDebounced();
+    },
   },
 };
 </script>
