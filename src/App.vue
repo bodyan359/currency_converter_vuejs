@@ -6,7 +6,6 @@
     <div>
       <div class="">
         <input
-          id="currencyInput"
           class="currency-input"
           v-model="amountToConvert"
           @keypress="isNumber"
@@ -26,42 +25,53 @@
         </option>
       </select>
     </div>
-    <div>
+    <div class="">
       {{ amountToConvert }} {{ base }}
       =
       {{ convertedAmount }}
       {{ currencyTo }}
+    </div>
+    <div v-for="(convertion, index) in latestConvertionsReverse" :key="index">
+      ({{ convertion.date }}) : {{ convertion.amountToConvert }}
+      {{ convertion.base }} = {{ convertion.convertedAmount }}
+      {{ convertion.currencyTo }}
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { debounce, dateFormat } from "./utils";
 
 export default {
   name: "App",
   components: {},
   computed: {
-    rates: {
-      get: function() {
-        return this.rates_internal ? Object.keys(this.rates_internal) : [];
-      },
-      set: function(value) {
-        this.rates_internal = value;
-      },
+    latestConvertionsReverse: function() {
+      return this.latestConvertions.slice(0).reverse();
     },
   },
   data() {
     return {
-      rates_internal: null,
+      latestConvertions: [],
+      rates: [],
       base: "USD",
       currencyTo: "PLN",
       amountToConvert: "",
       convertedAmount: "",
-      onInputDebounced: this.debounce(this.onInput, 1000),
+      onInputDebounced: debounce(this.onInput, 1000),
     };
   },
   methods: {
+    addLatestConvertions: function() {
+      this.latestConvertions.push({
+        date: dateFormat(new Date()),
+        amountToConvert: this.amountToConvert,
+        base: this.base,
+        currencyTo: this.currencyTo,
+        convertedAmount: this.convertedAmount,
+      });
+    },
     isNumber: function(evt) {
       evt = evt ? evt : window.event;
       let charCode = evt.which ? evt.which : evt.keyCode;
@@ -86,29 +96,17 @@ export default {
           this.convertedAmount = (exchangeRate * this.amountToConvert).toFixed(
             2
           );
+          this.addLatestConvertions();
         });
-    },
-    debounce: function(func, wait, immediate) {
-      let timeout;
-      return function() {
-        let context = this,
-          args = arguments;
-        let later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-        };
-        let callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-      };
     },
   },
   mounted() {
     axios
       .get("https://api.exchangeratesapi.io/latest")
       .then((response) => {
-        this.rates_internal = response.data.rates ? response.data.rates : [];
+        this.rates = response.data.rates
+          ? Object.keys(response.data.rates)
+          : [];
       })
       .catch((error) => {
         console.error(error);
