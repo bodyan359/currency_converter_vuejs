@@ -1,68 +1,88 @@
 <template>
   <div id="app">
-    <h1 class="title">Currency Converter</h1>
-    <div class="container">
-      <input
-        class="currency-input"
-        v-model="amountToConvert"
-        @keypress="isNumber"
-        @input="onInputDebounced"
-        placeholder="Enter Amount to Convert"
-      />
-      <select class="select base" v-model="base">
-        <option v-for="(item, index) in rates" :key="index">
-          {{ item }}
-        </option>
-      </select>
-      >
-      {{ convertedAmount }}
-      <select class="select currencyTo" v-model="currencyTo">
-        <option v-for="(item, index) in rates" :key="index">
-          {{ item }}
-        </option>
-      </select>
-      <div class="result">
-        {{ amountToConvert }} {{ base }}
-
-        <button class="changeCurrencyButton" v-on:click="changeCurency">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            height="16px"
-            width="16px"
-            viewBox="0 0 24 24"
-            class="sc-AxhCb CnJdC"
-          >
-            <path
-              d="M6 16H20M20 16L17 19M20 16L17 13"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-miterlimit="10"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-            <path
-              d="M18 8H4M4 8L7 11M4 8L7 5"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-miterlimit="10"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-          </svg>
-        </button>
-        {{ currencyTo }}
+    <div class="wrapper">
+      <h1>Currency Converter</h1>
+      <div class="container">
+        <div class="container-inside">
+          <div class="currency-from">
+            <div>
+              <input
+                class="currency-input"
+                v-model="amountToConvert"
+                @keypress="isNumber"
+                @input="onInputDebounced"
+                placeholder="Enter amount"
+              />
+            </div>
+            <div>
+              <select class="select base" v-model="base">
+                <option v-for="(item, index) in rates" :key="index">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="flex-space-between">
+            <button class="changeCurrencyButton" v-on:click="changeCurency">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                height="16px"
+                width="16px"
+                viewBox="0 0 24 24"
+                class="sc-AxhCb CnJdC"
+              >
+                <path
+                  d="M6 16H20M20 16L17 19M20 16L17 13"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+                <path
+                  d="M18 8H4M4 8L7 11M4 8L7 5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-miterlimit="10"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <div class="currency-to">
+            <div>
+              <input
+                disabled
+                class="currency-input"
+                v-model="convertedAmount"
+                @keypress="isNumber"
+                placeholder="Result"
+              />
+            </div>
+            <div>
+              <select class="select currencyTo" v-model="currencyTo">
+                <option v-for="(item, index) in rates" :key="index">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <h3 class="history">Currency Converter History</h3>
-    <div
-      class="result-history"
-      v-for="(convertion, index) in latestConvertionsReverse"
-      :key="index"
-    >
-      ({{ convertion.date }}): {{ convertion.amountToConvert }}
-      {{ convertion.base }} = {{ convertion.convertedAmount }}
-      {{ convertion.currencyTo }}
+      <div class="history">
+        <h2>Currency Converter History</h2>
+        <div
+          class="result-history"
+          v-for="(convertion, index) in latestConvertionsReverse"
+          :key="index"
+        >
+          ({{ convertion.date }}): {{ convertion.amountToConvert }}
+          {{ convertion.base }} = {{ convertion.convertedAmount }}
+          {{ convertion.currencyTo }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -85,18 +105,22 @@ export default {
       rates: [],
       base: "USD",
       currencyTo: "PLN",
-      amountToConvert: 10,
-      convertedAmount: this.onInputDebounced,
+      amountToConvert: "",
+      convertedAmount: "",
       onInputDebounced: debounce(this.onInput, 1000),
     };
   },
   methods: {
     changeCurency: function() {
-      let tmp, tmp2;
+      let tmp, tmp2, tmp3, tmp4;
       tmp = this.base;
       tmp2 = this.currencyTo;
-      this.base = tmp2;
+      tmp3 = this.amountToConvert;
+      tmp4 = this.convertedAmount;
       this.currencyTo = tmp;
+      this.base = tmp2;
+      this.convertedAmount = tmp3;
+      this.amountToConvert = tmp4;
     },
     addLatestConvertions: function() {
       this.latestConvertions.push({
@@ -168,44 +192,93 @@ export default {
   font-size: 24px;
 }
 
-.container {
-  -ms-flex: 0 0 66.666667%;
-  flex: 0 0 66.666667%;
-  max-width: 66.666667%;
-  border-radius: 30px;
+.history {
   text-align: center;
-  background: rgb(248, 248, 248);
+}
+
+.container {
+  background: aliceblue;
+  border-radius: 30px;
+  max-width: 1300px;
   margin: auto;
 }
-@media (max-width: 900px) {
-  .container {
-    margin: 0px;
-    max-width: 100%;
+
+.container-inside {
+  padding: 15px;
+  margin: auto;
+  display: flex;
+  max-width: 800px;
+}
+
+@media (max-width: 740px) {
+  .container-inside {
+    display: block;
+    text-align: center;
+  }
+
+  .currency-from,
+  .currency-to {
+    width: unset !important;
+  }
+
+  .flex-space-between {
+    margin: 20px 0 !important;
   }
 }
+
+@media (max-width: 378px) {
+  .currency-input {
+    max-width: 150px !important;
+    font-size: 14px !important;
+  }
+}
+
+.block {
+  display: block;
+}
+
+.currency-from,
+.currency-to {
+  background-color: white;
+  padding: 5px;
+  border-radius: 15px;
+  width: 300px;
+}
+
 .currency-input {
-  height: 50px;
-  font-size: 100%;
+  height: 30px;
+  max-width: 80%;
+  font-size: 24px;
   font-weight: bold;
-  border: 0;
-  // padding: 7px 15px;
-  border: 1px solid #ccc;
-  position: relative;
   margin: 5px 10px;
+  text-align: center;
+  border-radius: 17px;
+}
+
+.currency-from div,
+.currency-to div {
+  text-align: center;
 }
 .result {
   text-align: center;
   font-weight: bold;
   margin-top: 15px;
 }
-h1,
-h3 {
-  margin-left: 1.3em;
+h1 {
+  margin-top: 0;
+}
+h2 {
+  margin-top: 85px;
+  margin-bottom: 0;
+}
+.flex-space-between {
+  margin: auto;
 }
 .result-history {
-  margin-top: 15px;
-  margin-left: 1.3em;
   border-bottom: 1px solid #2c3e50;
+  max-width: 800px;
+  margin: auto;
+  padding-top: 20px;
 }
 select {
   height: 50px;
@@ -232,20 +305,23 @@ select::-ms-expand {
   font-weight: normal;
   display: inline-block;
   border: 1px solid transparent;
-  margin: 0px;
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
-  padding: 0.375rem 0.75rem;
+  padding-top: 5px;
   font-size: 14px;
   line-height: 1.5;
   background: rgb(16, 112, 224);
   color: rgb(255, 255, 255);
   text-decoration: none !important;
   outline: none !important;
+  height: 30px;
 }
 .changeCurrencyButton:hover {
   background: rgba(16, 112, 224, 0.85);
   color: rgb(255, 255, 255);
+}
+.wrapper {
+  padding: 20px;
 }
 </style>
