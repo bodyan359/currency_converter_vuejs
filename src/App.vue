@@ -9,13 +9,13 @@
         @input="onInputDebounced"
         placeholder="Enter Amount to Convert"
       />
-
       <select class="select base" v-model="base">
         <option v-for="(item, index) in rates" :key="index">
           {{ item }}
         </option>
       </select>
       >
+      {{ convertedAmount }}
       <select class="select currencyTo" v-model="currencyTo">
         <option v-for="(item, index) in rates" :key="index">
           {{ item }}
@@ -23,8 +23,34 @@
       </select>
       <div class="result">
         {{ amountToConvert }} {{ base }}
-        =
-        {{ convertedAmount }}
+
+        <button class="changeCurrencyButton" v-on:click="changeCurency">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            height="16px"
+            width="16px"
+            viewBox="0 0 24 24"
+            class="sc-AxhCb CnJdC"
+          >
+            <path
+              d="M6 16H20M20 16L17 19M20 16L17 13"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-miterlimit="10"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+            <path
+              d="M18 8H4M4 8L7 11M4 8L7 5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-miterlimit="10"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </button>
         {{ currencyTo }}
       </div>
     </div>
@@ -59,12 +85,19 @@ export default {
       rates: [],
       base: "USD",
       currencyTo: "PLN",
-      amountToConvert: "",
-      convertedAmount: "",
+      amountToConvert: 10,
+      convertedAmount: this.onInputDebounced,
       onInputDebounced: debounce(this.onInput, 1000),
     };
   },
   methods: {
+    changeCurency: function() {
+      let tmp, tmp2;
+      tmp = this.base;
+      tmp2 = this.currencyTo;
+      this.base = tmp2;
+      this.currencyTo = tmp;
+    },
     addLatestConvertions: function() {
       this.latestConvertions.push({
         date: dateFormat(new Date()),
@@ -144,7 +177,7 @@ export default {
   background: rgb(248, 248, 248);
   margin: auto;
 }
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .container {
     margin: 0px;
     max-width: 100%;
@@ -158,7 +191,6 @@ export default {
   // padding: 7px 15px;
   border: 1px solid #ccc;
   position: relative;
-  background: transparent;
   margin: 5px 10px;
 }
 .result {
@@ -193,5 +225,27 @@ select {
 /* For IE <= 11 */
 select::-ms-expand {
   display: none;
+}
+.changeCurrencyButton {
+  transition: background 0.2s ease-in-out 0s;
+  border-radius: 8px;
+  font-weight: normal;
+  display: inline-block;
+  border: 1px solid transparent;
+  margin: 0px;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  padding: 0.375rem 0.75rem;
+  font-size: 14px;
+  line-height: 1.5;
+  background: rgb(16, 112, 224);
+  color: rgb(255, 255, 255);
+  text-decoration: none !important;
+  outline: none !important;
+}
+.changeCurrencyButton:hover {
+  background: rgba(16, 112, 224, 0.85);
+  color: rgb(255, 255, 255);
 }
 </style>
