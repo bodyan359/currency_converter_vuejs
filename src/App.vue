@@ -210,29 +210,21 @@ export default {
   max-width: 800px;
 }
 
-@media (max-width: 740px) {
-  .container-inside {
-    display: block;
-    text-align: center;
-  }
-
-  .currency-from,
-  .currency-to {
-    width: unset !important;
-  }
-
-  .flex-space-between {
-    margin: 20px 0 !important;
-  }
+.currency-input {
+  height: 30px;
+  max-width: 80%;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 5px 10px;
+  text-align: center;
+  border-radius: 17px;
 }
-
 @media (max-width: 378px) {
   .currency-input {
-    max-width: 150px !important;
-    font-size: 14px !important;
+    max-width: 150px;
+    font-size: 14px;
   }
 }
-
 .block {
   display: block;
 }
@@ -243,16 +235,6 @@ export default {
   padding: 5px;
   border-radius: 15px;
   width: 300px;
-}
-
-.currency-input {
-  height: 30px;
-  max-width: 80%;
-  font-size: 24px;
-  font-weight: bold;
-  margin: 5px 10px;
-  text-align: center;
-  border-radius: 17px;
 }
 
 .currency-from div,
@@ -313,8 +295,6 @@ select::-ms-expand {
   line-height: 1.5;
   background: rgb(16, 112, 224);
   color: rgb(255, 255, 255);
-  text-decoration: none !important;
-  outline: none !important;
   height: 30px;
 }
 .changeCurrencyButton:hover {
@@ -323,5 +303,19 @@ select::-ms-expand {
 }
 .wrapper {
   padding: 20px;
+}
+@media (max-width: 740px) {
+  .container-inside {
+    display: block;
+    text-align: center;
+  }
+
+  .flex-space-between {
+    margin: 20px 0;
+  }
+  .currency-from,
+  .currency-to {
+    width: unset;
+  }
 }
 </style>
